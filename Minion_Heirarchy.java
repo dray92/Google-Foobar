@@ -45,9 +45,13 @@ Output:
 public class Minion_Heirarchy {
 
 	public static int answer(int x) { 
-		if(x == 1)
+		if(x < 0)
+            return 0;
+        
+        // scientist or whatever is at the root node
+        if(x == 1)
 			return 8;
-		return 7*x + answer(x-1);	// minions at this level = 7*x
+		return (int)Math.pow(7,x) + answer(x-1);	// minions at this level = 7^x
 
     }
 }
