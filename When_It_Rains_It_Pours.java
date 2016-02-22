@@ -10,23 +10,23 @@ Specifically, suppose there is a line of hutches, stacked to various heights and
 
 For example, suppose the heights of the stacked hutches are [1,4,2,5,1,2,3] (the hutches are shown below):
 
-. . . X . . .
-. X . X . . .
-. X . X . . X
-. X X X . X X
-X X X X X X X
+. . . I . . .
+. I . I . . .
+. I . I . . I
+. I I I . I I
+I I I I I I I
 1 4 2 5 1 2 3
 
 When water is poured over the top at all places and allowed to runoff, it will remain trapped at the 'O' locations:
 
-. . . X . . .
-. X O X . . .
-. X O X O O X
-. X X X O X X
-X X X X X X X
+. . . I . . .
+. I X I . . .
+. I X I X X I
+. I I I X I I
+I I I I I I I
 1 4 2 5 1 2 3
 
-The amount of water that has accumulated is the number of Os, which, in this instance, is 5.
+The amount of water that has accumulated is the number of Xs, which, in this instance, is 5.
 
 Write a function called answer(heights) which, given the heights of the stacked hutches from left-to-right as a list, computes the total area of standing water accumulated when water is poured from the top and allowed to run off the sides.
 
