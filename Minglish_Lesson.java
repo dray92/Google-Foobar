@@ -72,7 +72,6 @@ public class Minglish_Lesson {
         for(Character key: map.keySet()) 
         	if(!valueCharacters.contains(key))
         		startingCharacters.add(key);
-        System.out.println(startingCharacters.toString());
         
         /**** processing graph to obtain alphabet ****/	
         Set<Character> alphabet = new LinkedHashSet<Character>(), visitedChars = new HashSet<Character>();
@@ -120,7 +119,6 @@ public class Minglish_Lesson {
         	
         	map.get(key).add(value);
         }
-        System.out.println(map.toString());
         return map;
 	}
 	
@@ -143,8 +141,6 @@ public class Minglish_Lesson {
 		// the same letter twice
 		if(!visitedChars.add(ch))
 			return;
-		
-		
 		
 		// do a mild check to see if map contains ch as a key
 		// if it does, do a dfs on each of the nodes in the Arraylist
