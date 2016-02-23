@@ -1,8 +1,7 @@
 package primary;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -58,98 +57,107 @@ public class Minglish_Lesson {
         // here, order is {a,b}
         
         // building map that will contain idea of ordering
-        Map<Character, ArrayList<Character>> map = getMap(words);
+        Map<Character, LinkedHashSet<Character>> map = getMap(words);
         
         /***** identify characters to start dfs from *****/
-        Set<Character> startingCharacters = getClone(map.keySet());	// cloned to avoid concurrent modification exception
+        Set<Character> valueCharacters = new HashSet<Character>();
+        // get all values present
+        for(Character key: map.keySet()) {
+        	for(Character ch: map.get(key))
+        		valueCharacters.add(ch);
+        }
         
-        // parsing all character in arraylists
-        for(Character ch: map.keySet()) 
-        	for(Character connectedChar: map.get(ch)) 
-        		// remove char if present
-        		// omitted check to see if char present
-        		// since that would incur an additional 
-        		// traversal
-        		startingCharacters.remove(connectedChar);
-        	
+        Set<Character> startingCharacters = new LinkedHashSet<Character>();
+        // finding unique key values and preserving ordering
+        for(Character key: map.keySet()) 
+        	if(!valueCharacters.contains(key))
+        		startingCharacters.add(key);
+        System.out.println(startingCharacters.toString());
+        
+        /**** processing graph to obtain alphabet ****/	
         Set<Character> alphabet = new LinkedHashSet<Character>(), visitedChars = new HashSet<Character>();
         
         // do dfs starting at every 'starting character' which is essentially
         // all characters, for which we have inequalities such that this 
-        // is larger than another character.
+        // is smaller than another character.
         for(Character ch: startingCharacters) 
         	traverse(ch, alphabet, visitedChars, map);
         
         // linkedhashset to string
+        // last char is at the end, so doing in reverse
         StringBuilder orderedAlpha = new StringBuilder();
         for(char ch: alphabet)
-        	orderedAlpha.append(ch);
+        	orderedAlpha.insert(0,ch);
         
         return orderedAlpha.toString();
     }
 	
 	// building map that will contain idea of ordering
-	private static Map<Character, ArrayList<Character>> getMap(String[] words) {
-		Map<Character, ArrayList<Character>> map = new HashMap<Character, ArrayList<Character>>();
+	private static Map<Character, LinkedHashSet<Character>> getMap(String[] words) {
+		// LinkedHashMap will preserve ordering of obtained inequalities
+		Map<Character, LinkedHashSet<Character>> map = new LinkedHashMap<Character, LinkedHashSet<Character>>();
 		// building map that will contain idea of ordering
         for(int i = 0 ; i < words.length - 1 ; i++) {
-        	// try to establish a relationship between 
-        	// this and the previous word
-        	int minSimilarity = Math.min(words[i].length(), words[i+1].length());
+        	//
+        	Integer breakInSequence = getPointOfInequality(words[i], words[i+1]);
         	
-        	// find point where first break in equality occurs
-        	Integer chars;
-        	boolean breakBeforeEnd = false;
-        	for(chars = 0 ; chars < minSimilarity ; chars++)
-        		if(words[i].charAt(chars) != words[i+1].charAt(chars)) {
-        			breakBeforeEnd = true;
-        			break;
-        		}
-        	// chars points to first point in these 2 words that 
-        	// can help us determine some ordering
+        	// no break found => cannot derive some inequality from these 2 words
+        	// if 2 words are the same till minLength, they are useless for
+        	// intention to derive an inequality
+        	// eg. [yzy, yzyx,..] when looking at y and yx, we compare first 3
+        	// character from each string and retrieve no useful info
+        	// it gives us no useful info; this will also cover the case
+        	// where both words are the same
+        	if(breakInSequence == null)
+        		continue;
         	
-        	if(!breakBeforeEnd)
-        		chars--;	// prevent index out of bounds
+        	char key = words[i].charAt(breakInSequence);
+        	char value = words[i + 1].charAt(breakInSequence);
         	
-        	// previous word will be used as key to preserve sense of ordering
-        	if(!map.containsKey(words[i].charAt(chars))) 
-        		map.put(words[i].charAt(chars), new ArrayList<Character>());
+        	// previous word character will be used as key to preserve sense of ordering
+        	if(!map.containsKey(key))
+        		map.put(key, new LinkedHashSet<Character>());
         	
-        	map.get(words[i].charAt(chars)).add(words[i+1].charAt(chars));
+        	map.get(key).add(value);
         }
+        System.out.println(map.toString());
         return map;
+	}
+	
+	private static Integer getPointOfInequality(String a, String b) {
+		
+		// length of smaller string for comparison purposes
+		int len = Math.min(a.length(), b.length());
+		for(int i = 0 ; i < len ; i++)
+			if(a.charAt(i) != b.charAt(i))
+				return i;
+		
+		return null;
 	}
 	
 	// depth first search traversal
 	private static void traverse(Character ch, Set<Character> alphabet,
-			Set<Character> visitedChars, Map<Character, ArrayList<Character>> map) {
+			Set<Character> visitedChars, Map<Character, LinkedHashSet<Character>> map) {
 		
 		// add to visited list since we don't ever want to visit
 		// the same letter twice
 		if(!visitedChars.add(ch))
 			return;
 		
-		// add it to the set before traversing to preserve order
-		alphabet.add(ch);
+		
 		
 		// do a mild check to see if map contains ch as a key
 		// if it does, do a dfs on each of the nodes in the Arraylist
 		if(map.containsKey(ch)) 
 			for(Character nextChar: map.get(ch)) 		
 				traverse(nextChar, alphabet, visitedChars, map);
-			
+		
+		// add it to the set
+		alphabet.add(ch);
 	}
-
-	// a cloned copy of a set
-	private static Set<Character> getClone(Set<Character> keySet) {
-		Set<Character> newSet = new HashSet<Character>();
-		for(Character c: keySet)
-			newSet.add(c);
-		return newSet;
-	}
-
+	
 	public static void main(String[] args) {
-		String[] words = {"z", "yx", "yz"};
+		String[] words = {"ba", "ab", "cb"};
 		System.out.println(answer(words));
 	}
 }
