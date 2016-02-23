@@ -1,5 +1,5 @@
 # Google-Foobar
-Lucky enough to get a chance to solve these 'puzzles'. Learn more about this [here](http://www.ibtimes.co.uk/google-foobar-how-searching-web-earned-software-graduate-job-google-15172840).
+Got a chance to solve these 'puzzles'. Learn more about this [here](http://www.ibtimes.co.uk/google-foobar-how-searching-web-earned-software-graduate-job-google-15172840).
 
 ##### Screenshot 0
 ![Screenshot 0](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_0.png)
