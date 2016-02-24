@@ -1,9 +1,7 @@
 package primary;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Spy snippets
@@ -58,115 +56,72 @@ public class Spy_Snippets {
 
         // Your code goes here.
 		
-		// look for spaces and add word
-		ArrayList<String> words = new ArrayList<String>();
-		int start = 0;
-		// single character, single word case
-		if(document.length() == 1)
-			words.add(document.substring(start,1));
-		
-		for(int i = 1 ; i < document.length() ; i++) {
-			// last word
-			if(i == document.length() - 1)
-				words.add(document.substring(start, i+1));
-			
-			// all other words
-			if(document.charAt(i) == ' ') {
-				words.add(document.substring(start, i));
-				start = i+1;
-			}
-			
-		}
+		// document words array
+		String[] words = document.split(" ");
 
-		Map<String, ArrayList<Integer>> map = new HashMap<String, ArrayList<Integer>>();
+		// using HashSet since comparison will be the fastest
+		Set<String> searchWords = new HashSet<String>();
+		for(String word: searchTerms)
+			searchWords.add(word);
 		
-		for(String searchTerm: searchTerms) {
-			if(!map.containsKey(searchTerm))
-				map.put(searchTerm, new ArrayList<Integer>());
+		int numSearchWords = searchTerms.length;
+		
+		int startIndx = -1, curIndx = 0;
+		
+		// global comparison metrics
+		int minSequenceSize = Integer.MAX_VALUE, minSequenceStart = 0; 
+		
+		// keep track of words found, HashSet since ordering not required
+		// using set since searchTerms can have a frequency > 1 in a sequence
+		// don't want that to affect result
+		Set<String> foundWords = new HashSet<String>();
+		
+		while(curIndx != words.length) {
 			
-			// not using hash approach to compare strings since
-			// total neither document or list of search terms is not
-			// considered to be very long
-			for(int i = 0 ; i < words.size() ; i++) {
-				// word found
-				if(words.get(i).compareTo(searchTerm) == 0)
-					map.get(searchTerm).add(i);
-			}
-		}
-		
-		// set up initial score
-		int minScore = Integer.MAX_VALUE;
-		
-		// set up snippet bounds
-		int overallLower = 0, overallUpper = words.size() - 1;
-		
-		// goal is to compare distances from current instance of searchWord
-		// to other searchWords; we have to choose a subset that has 
-		// the smallest distance
-		// one way to think would be to have a circle with the currentWord 
-		// at the center, and other words surrounding it, with the most
-		// distant words on the circumference
-		for(String searchTerm: map.keySet()) {
-			// iterate over the indices of the word in document
-			for(int index: map.get(searchTerm)) {
+			// current word
+			String word = words[curIndx];
+			
+			// only concerned if this is a searchTerm
+			if(searchWords.contains(word)) {
+				// no words found
+				// => start of sequence
+				if(foundWords.size() == 0)
+					startIndx = curIndx;
 				
-				// keeps track of distance of each element 
-				// in subset around current searchTerm
-				// minimum subset is the one that contains result
-				ArrayList<Integer> thisToOtherDistances = new ArrayList<Integer>();
+				// add word
+				foundWords.add(word);
 				
-				// distance from this index to this index is 0
-				thisToOtherDistances.add(0);
-				
-				// trying to form new snippet around this word index
-				int lower = index, upper = index;
-				
-				// iterate over the other search words
-				for(String otherSearchTerm: map.keySet()) {
-					
-					// skip if current searchTerm shows up
-					if(searchTerm.equals(otherSearchTerm))
-						continue;
-					
-					int minDist = Integer.MAX_VALUE;
-					
-					// iterate over indices of the other word
-					for(int otherIndex: map.get(otherSearchTerm)) {
-						int dist = (int)Math.abs(index - otherIndex);
-						
-						// this index is of interest
-						if(dist < minDist) {
-							minDist = dist;
-							
-							// update snippet bounds
-							lower = Math.min(lower, otherIndex);
-							upper = Math.max(upper, otherIndex);
-						}
+				if(foundWords.size() == numSearchWords) {
+					// do comparisons
+					int curSequenceSize = curIndx - startIndx + 1;
+					if(curSequenceSize < minSequenceSize) {
+						// update global comparison metrics
+						minSequenceStart = startIndx;
+						minSequenceSize = curSequenceSize;
 					}
 					
-					// add least possible distance from other term to current term
-					thisToOtherDistances.add(minDist);
-				}
-				
-				int score = Collections.max(thisToOtherDistances) - Collections.min(thisToOtherDistances) + 1;
-				if(score < minScore) {
-					minScore = score;
+					// reset curIndx to make sequence search start 
+					// from the next index
+					curIndx = startIndx;
 					
-					// update global snippet bounds only if new bounds are tighter
-					if((upper - lower) < (overallUpper-overallLower)) {
-						overallLower = lower;
-						overallUpper = upper;
-					}
+					// clear foundWords
+					// old Set will be deleted by garbage collector
+					// new Set being initialized since old size might 
+					// have been unnecessarily big
+					foundWords = new HashSet<String>();
 				}
 			}
+			curIndx++;
 		}
 		
-		StringBuilder string = new StringBuilder();
-		string.append(words.get(overallLower));
-		for(int i = overallLower+1 ; i <= overallUpper ; i++)
-			string.append(" " + words.get(i));
+		StringBuilder sequence = new StringBuilder();
 		
-		return string.toString();
+		// adding first word since remaining words will need spaces
+		sequence.append(words[minSequenceStart]);
+		for(int i = minSequenceStart + 1; i < minSequenceStart + minSequenceSize ; i++)
+			sequence.append(" " + words[i]);
+		
+		return sequence.toString();
     }
 	
 	public static void main(String[] args) {
@@ -179,11 +134,11 @@ public class Spy_Snippets {
 //		String doc = "a b c d a";
 //		String[] search = {"a", "c", "d"};
 		
-//		String doc = "many google employees can program can google employees because google is a technology company that writes programs";
-//		String[] search = {"google", "program", "can"};
+		String doc = "many google employees can program can google employees because google is a technology company that writes programs";
+		String[] search = {"google", "program", "can"};
 		
-		String doc = "a b d a c a c c d a";
-		String[] search = {"a", "c", "d"};
+//		String doc = "a b d a c a c c d a";
+//		String[] search = {"a", "c", "d"};
 		
 		System.out.println(answer(doc, search));
 	}
