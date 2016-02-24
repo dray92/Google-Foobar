@@ -12,3 +12,6 @@ Got a chance to solve these 'puzzles'. Learn more about this [here](http://www.i
 
 ##### Screenshot 3
 ![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_3.png)
+
+##### Screenshot 4
+![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_4.png)
