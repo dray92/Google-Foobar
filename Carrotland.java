@@ -56,7 +56,10 @@ public class Carrotland {
 		int verticalRange = Math.abs(upperBound - lowerBound);
 		
 		// initialize answer to upper bound
-		long answer =  ( horizontalRange + 1 ) * ( verticalRange + 1 );
+		
+		// this contains the number of points in 
+		// the interior of the rectangle
+		long answer =  ( horizontalRange - 1 ) * ( verticalRange - 1 );
 		
 		for(int pointIndex = 0 ; pointIndex < 3 ; pointIndex++) {
 			// first point
@@ -67,33 +70,24 @@ public class Carrotland {
 			int Bx = vertices[(pointIndex+1)%3][0];
 			int By = vertices[(pointIndex+1)%3][1];
 			
-			int minX = Math.min(Ax, Bx);
-			int maxX = Math.max(Ax, Bx);
-			int minY = Math.min(Ay, By);
-			int maxY = Math.max(Ay, By);
-			
-			int numPtsX = Math.abs(maxX - minX) + 1;
-			int numPtsY = Math.abs(maxY - minY) + 1;
-			int totalPtsRect = numPtsX * numPtsY;
-			
-			int numPtsLine = getNumPointsLine(Ax, Bx, Ay, By);
-			
-			boolean parallelToAxis = false;
-			
-			// line is actually either parallel 
-			// to X-axis or Y-axis
-			if(totalPtsRect == numPtsLine) 
-				parallelToAxis = true;
+			// is line perpendicular or parallel
+			// to the X-axis
+			if(parallelOrPerpendicular(Ax, Ay, Bx, By)) 
+				continue;
 			
 			
-			if(parallelToAxis)
-				answer -= numPtsLine;
-			else 
-				answer -= (int)( (totalPtsRect + numPtsLine)/2 );
+			long numPtsLine = getNumPointsLine(Ax, Bx, Ay, By);
+			
+			// exclude endpoints
+			numPtsLine -= 2;
+			
+			long width = Math.abs(Ax - Bx);
+			long height = Math.abs(Ay - By);
+			
+			long num = ( (width - 1) * (height - 1) ) - numPtsLine;
+			
+			answer -= numPtsLine + num/2;
 		}
-		
-		// 3 points have been excluded twice instead of once
-		answer += 3;
 		
 		/* Now, this model assumed that all the vertices of the triangle 
 		 * will lie on the perimeter of the surrounding rectangle.
@@ -148,6 +142,10 @@ public class Carrotland {
 	
 	private static int GCD(int x, int y) {
 		return y == 0 ? x : GCD(y, x%y);
+	}
+	
+	private static boolean parallelOrPerpendicular(int Ax, int Ay, int Bx, int By) {
+		return ( (Ax == Bx) || (Ay == By) );
 	}
 	
 	public static void main(String[] args) {
