@@ -1,5 +1,6 @@
 package primary;
 
+
 /**
  * Carrotland
 ==========
@@ -56,7 +57,7 @@ public class Carrotland {
 		
 		// initialize answer to upper bound
 		long answer =  ( horizontalRange + 1 ) * ( verticalRange + 1 );
-		System.out.println(answer > 1730960165);
+		
 		for(int pointIndex = 0 ; pointIndex < 3 ; pointIndex++) {
 			// first point
 			int Ax = vertices[pointIndex][0];
