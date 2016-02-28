@@ -25,6 +25,8 @@ x will always be a positive integer, no larger than 1000000000.
  */
 public class Peculiar_Balance {
 	
+	private static final int MAX_ALLOWED_VALUE = 1000000000;
+	
 	public static String[] answer(int x) {
 		
 		int nextHigherPow = getNextHigherPower(x);
@@ -124,7 +126,7 @@ public class Peculiar_Balance {
 	static {
 		if(pow3 == null) {
 			// log(1000000000)/log(3) = 18.8631294686
-			pow3 = new int[2 + (int)(Math.log10(1000000000)/Math.log10(3))];
+			pow3 = new int[2 + (int)(Math.log10(MAX_ALLOWED_VALUE)/Math.log10(3))];
 			pow3[0] = 1;
 			for(int i = 1 ; i < pow3.length ; i++)
 				pow3[i] = 3 * pow3[i-1];
@@ -132,27 +134,30 @@ public class Peculiar_Balance {
 	}
 	
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		for(int i = 1 ; i <= 1000000000 ; i++) {
-			String[] ans = answer(i);
-			long left = i;
-			long right = 0;
-			for(int index = 0 ; index < ans.length ; index++) {
-				if(ans[index].compareTo("L") == 0) 
-					left += Math.pow(3,index);
-				else if(ans[index].compareTo("R") == 0)
-					right += Math.pow(3,index);
+		boolean TESTER = false;
+		if(TESTER) {
+			long start = System.currentTimeMillis();
+			for(int i = 1 ; i <= 1000000000 ; i++) {
+				String[] ans = answer(i);
+				long left = i;
+				long right = 0;
+				for(int index = 0 ; index < ans.length ; index++) {
+					if(ans[index].compareTo("L") == 0) 
+						left += Math.pow(3,index);
+					else if(ans[index].compareTo("R") == 0)
+						right += Math.pow(3,index);
+				}
+				
+				// if left and right aren't equal, we failed
+				if(left != right) {
+					System.out.println("Failed at x = " + i);
+					break;
+				}
+				if(i%10000 == 0)
+					System.out.println("Testing x = " + i);
 			}
-			
-			// if left and right aren't equal, we failed
-			if(left != right) {
-				System.out.println("Failed at x = " + i);
-				break;
-			}
-			if(i%10000 == 0)
-				System.out.println("Testing x = " + i);
+			System.out.println( "Total time: " + (System.currentTimeMillis() - start) );
 		}
-		System.out.println( "Total time: " + (System.currentTimeMillis() - start) );
 		System.out.println(Arrays.toString(answer(999999999)));
 		System.out.println(Arrays.toString(answer(25)));
 	}
