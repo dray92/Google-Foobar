@@ -1,3 +1,5 @@
+ALL CODE IN THIS REPOSITORY ARE FOR EDUCATIONAL PURPOSES ONLY. PLEASE DO NOT COPY ANY CODE.
+
 # Google-Foobar
 Got a chance to solve these 'puzzles'. Learn more about this [here](http://thehustle.co/the-secret-google-interview-that-landed-me-a-job).
 
