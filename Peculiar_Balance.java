@@ -33,7 +33,7 @@ public class Peculiar_Balance {
 		 * Ideation:
 		 * Say, x is 25. This means I have 25 on the left
 		 * side. The nextHigherPower of 3 from 25 is 27.
-		 * Hence, out result set will have a size of 1 + log(27)[base 3],
+		 * Hence, our result set will have a size of 1 + log(27)[base 3],
 		 * which is 1 + 3 = 4, since the 3^3 = 27.
 		 * The result set will look like [" ", " ", " ", " "], where the first
 		 * index shows position of 1(3^0), second shows position of 3(3^1),
@@ -98,7 +98,14 @@ public class Peculiar_Balance {
 				result[i] = "-";
 			}
 		}
-			
+		// if the last character is "-", then return array that
+		// doesn't contain the "-". There can't be another "-"
+		// before this since that would then imply that both
+		// ceiling( log10(x) / log10(3) ) and floor( log10(x) / log10(3) ) 
+		// are not being considered, which is plain absurd
+		if(result[result.length - 1].compareTo("-") == 0)
+			return Arrays.copyOf(result, result.length - 1);
+		
 		return result;
 	}
 	
@@ -125,6 +132,27 @@ public class Peculiar_Balance {
 	}
 	
 	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
+		for(int i = 1 ; i <= 1000000000 ; i++) {
+			String[] ans = answer(i);
+			long left = i;
+			long right = 0;
+			for(int index = 0 ; index < ans.length ; index++) {
+				if(ans[index].compareTo("L") == 0) 
+					left += Math.pow(3,index);
+				else if(ans[index].compareTo("R") == 0)
+					right += Math.pow(3,index);
+			}
+			
+			// if left and right aren't equal, we failed
+			if(left != right) {
+				System.out.println("Failed at x = " + i);
+				break;
+			}
+			if(i%10000 == 0)
+				System.out.println("Testing x = " + i);
+		}
+		System.out.println( "Total time: " + (System.currentTimeMillis() - start) );
 		System.out.println(Arrays.toString(answer(999999999)));
 		System.out.println(Arrays.toString(answer(25)));
 	}
