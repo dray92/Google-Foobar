@@ -93,7 +93,8 @@ public class Hash_It_Out {
 	 * message[i] = ( result XOR message[i-1] ) / 129.
 	 * 
 	 * Here, we can comment that, for some a ∈ [0,1,2...),
-	 * message[i-1] = 129*a. This follows trivially from the fact that
+	 * result XOR'ed with message[i-1] = 129*a. 
+	 * This follows trivially from the fact that
 	 * message[i] is a whole number and the XOR operator returns whole numbers,
 	 * and that we are only working with non-negative numbers here.
 	 * So, as soon as we get ( result XOR message[i-1] ) modulo 129
