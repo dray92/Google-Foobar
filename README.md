@@ -25,3 +25,6 @@ Got a chance to solve these 'puzzles'. Learn more about this [here](http://thehu
 
 ##### Screenshot 6
 ![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_6.png)
+
+
+P.S. This thing might just not be invite-only. Click [here](http://146.148.62.204/) to try to take the challenge. :)
