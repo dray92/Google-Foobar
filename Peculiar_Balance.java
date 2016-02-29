@@ -29,7 +29,7 @@ public class Peculiar_Balance {
 	
 	public static String[] answer(int x) {
 		
-		int nextHigherPow = getNextHigherPower(x);
+		int nextHigherPow = getNextHigherPower(x); 
 		
 		/** 
 		 * Ideation:
@@ -134,7 +134,9 @@ public class Peculiar_Balance {
 	}
 	
 	public static void main(String[] args) {
-		boolean TESTER = false;
+		
+		final boolean TESTER = false;
+		
 		if(TESTER) {
 			long start = System.currentTimeMillis();
 			for(int i = 1 ; i <= 1000000000 ; i++) {
