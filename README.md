@@ -19,3 +19,9 @@ Got a chance to solve these 'puzzles'. Learn more about this [here](http://thehu
 
 ##### Screenshot 4
 ![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_4.png)
+
+##### Screenshot 5
+![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_5.png)
+
+##### Screenshot 6
+![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_6.png)
