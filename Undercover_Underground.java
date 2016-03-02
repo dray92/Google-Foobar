@@ -110,10 +110,10 @@ public class Undercover_Underground {
 	}
 
 	static Map<List<Integer>, String> resultMap = new HashMap<List<Integer>, String>();
-	// n -> number of nodes
-	// k -> number of edges
-	// n will be at least 2 and at most 20.
-	// k will be at least one less than n and at most (n * (n - 1)) / 2
+	// N -> number of nodes
+	// K -> number of edges
+	// N will be at least 2 and at most 20.
+	// K will be at least one less than n and at most (n * (n - 1)) / 2
 	public static String answer(int N, int K) {
 		/* for the case where K < N-1 */
 		if(K < N-1)
