@@ -27,4 +27,4 @@ Got a chance to solve these 'puzzles'. Learn more about this [here](http://thehu
 ![Screenshot 3](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_6.png)
 
 
-P.S. This thing might just not be invite-only. Click [here](http://146.148.62.204/) to try to take the challenge. :)
+P.S. This thing might just not be invite-only. Click [here](http://146.148.62.204/) to try to take the challenge. Google hid that IP address in the trailer of 'The Imitation Game', around the 0:04 mark. Now that I mentioned it, you want to see for yourself. Here's a link to the aptly named trailer, "[The Imitation Game – Are You Paying Attention](https://www.youtube.com/watch?v=sXKl3qu10-s)". :)
