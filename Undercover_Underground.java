@@ -109,12 +109,143 @@ public class Undercover_Underground {
 		return fact;
 	}
 
-	public static String answer(int n, int k) {
-		return "";
+	static Map<List<Integer>, String> resultMap = new HashMap<List<Integer>, String>();
+	// n -> number of nodes
+	// k -> number of edges
+	// n will be at least 2 and at most 20.
+	// k will be at least one less than n and at most (n * (n - 1)) / 2
+	public static String answer(int N, int K) {
+		/* for the case where K < N-1 */
+		if(K < N-1)
+			return BigInteger.ZERO.toString();
+		
+		/* for the case where K = N-1 */
+		// Cayley's formula applies [https://en.wikipedia.org/wiki/Cayley's_formula].
+		// number of trees on n labeled vertices is n^{n-2}.
+		if(K == N-1)
+			return BigInteger.valueOf((long)Math.pow(N, N-2)).toString();
+		
+		/* for the case where K > N-1 */
+		// check if key is present in the map
+		List<Integer> tuple = Arrays.asList(N, K);
+		if( resultMap.containsKey(tuple) )
+			return resultMap.get(tuple);
+						
+		// maximum number of edges in a simply 
+		// connected undirected unweighted graph 
+		// with n nodes = |N| * |N-1| / 2
+		int maxEdges = N * (N-1) / 2;
+		
+		/* for the case where K = N(N-1)/2 */
+		// if K is the maximum possible 
+		// number of edges for the number of 
+		// nodes, then there is only one way is 
+		// to make a graph (connect each node
+		// to all other nodes)
+		if(K == maxEdges)
+			return BigInteger.ONE.toString();
+		
+		/* for the case where K > N(N-1)/2 */
+		if(K > maxEdges)
+			return BigInteger.ZERO.toString();
+		
+		BigInteger count = BigInteger.ZERO;
+		
+		for(int k = 1; k <= N-1 ; k++) {
+			BigInteger combinations = nChooseR(N-1, k);
+			combinations = combinations.multiply(new BigInteger(answer(N-1, K-k)));
+			count = count.add(combinations);
+		}
+		
+		// unmodifiable so key cannot change hash code
+		resultMap.put(Collections.unmodifiableList(Arrays.asList(N, K)), count.toString());
+		
+		return count.toString();
+	}
+	
+	static Map<List<Integer>, String> resultMap2 = new HashMap<List<Integer>, String>();
+	// reference: http://math.stackexchange.com/questions/689526/how-many-connected-graphs-over-v-vertices-and-e-edges
+	public static String answer2(int N, int K) {
+		/* for the case where K < N-1 */
+		if(K < N-1)
+			return BigInteger.ZERO.toString();
+		
+		/* for the case where K = N-1 */
+		// Cayley's formula applies [https://en.wikipedia.org/wiki/Cayley's_formula].
+		// number of trees on n labeled vertices is n^{n-2}.
+		if(K == N-1)
+			return BigInteger.valueOf((long)Math.pow(N, N-2)).toString();
+		
+		/* for the case where K > N-1 */
+		// check if key is present in the map
+		List<Integer> tuple = Arrays.asList(N, K);
+		if( resultMap2.containsKey(tuple) )
+			return resultMap2.get(tuple);
+						
+		// maximum number of edges in a simply 
+		// connected undirected unweighted graph 
+		// with n nodes = |N| * |N-1| / 2
+		int maxEdges = N * (N-1) / 2;
+		
+		/* for the case where K = N(N-1)/2 */
+		// if K is the maximum possible 
+		// number of edges for the number of 
+		// nodes, then there is only one way is 
+		// to make a graph (connect each node
+		// to all other nodes)
+		if(K == maxEdges)
+			return BigInteger.ONE.toString();
+		
+		/* for the case where K > N(N-1)/2 */
+		if(K > maxEdges)
+			return BigInteger.ZERO.toString();
+		
+		// get the universal set
+		BigInteger allPossible = nChooseR(maxEdges, K);
+		
+		BigInteger repeats = BigInteger.ZERO;
+		// now, to remove duplicates, or incomplete graphs
+		// when can these cases occur?
+		for(int n = 0 ; n <= N-2 ; n++) {
+			
+			BigInteger choose_n_from_rem_nodes = nChooseR(N-1, n);
+			
+			int chooseN = (N - 1 - n) * (N - 2 - n) / 2;
+			
+			BigInteger repeatedEdges = BigInteger.ZERO;
+			for(int k = 0 ; k <= K ; k++) {
+				BigInteger combinations = nChooseR(chooseN, k);
+				
+				BigInteger recurse = new BigInteger(answer2(n+1, K-k));
+				
+				repeatedEdges = repeatedEdges.add(combinations.multiply(recurse));
+			}
+			
+			repeats = repeats.add(choose_n_from_rem_nodes.multiply(repeatedEdges));
+		}
+		
+		// remove repeats
+		allPossible = allPossible.subtract(repeats);
+		
+		// add to cache
+		resultMap2.put(Collections.unmodifiableList(Arrays.asList(N, K)), allPossible.toString());
+		return resultMap2.get(tuple);
 	}
 	
 	public static void main(String[] args) {
-		nChooseR(5,3);
-		nChooseR(5,3);
+		int fail = 0;
+		int total = 0;
+		for(int n = 2 ; n <= 20 ; n++) {
+			for(int k = n-1 ; k <= n*(n-1)/2 ; k++) {
+				total++;
+				String ans = answer(n,k);
+				String ans2 = answer2(n,k);
+				if(ans.compareTo(ans2) != 0) {
+					fail++;
+					System.out.println("N = " + n + " , K = " + k + " , num = " + ans + " ||| " + ans2);
+				}
+			}
+		}
+		System.out.println("Approach 1 fails " + ((100*fail)/total) + "% of the test");
 	}
 }
