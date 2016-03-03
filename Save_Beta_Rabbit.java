@@ -62,7 +62,6 @@ public class Save_Beta_Rabbit {
 	}
 	
 	// Collections.unmodifiableList(Arrays.asList(n, r)
-	private static Map<List<Integer>, Integer> cache;
 	private static int getRemainder(int foodLeft, int x, int y) {
 		
 		if(x == 0 && y == 0)
@@ -107,9 +106,17 @@ public class Save_Beta_Rabbit {
 		}	
 	}
 	
+	private static Map<List<Integer>, Integer> cache;
 	private static Integer rem(int food, int row, int col) {
 		if(row == 0 && col == 0)
 			return food;
+		
+		List<Integer> tuple = Arrays.asList(food, row, col);
+		if(cache.containsKey(tuple))
+			return cache.get(tuple);
+		
+		// unmodifiable so key cannot change hash code
+		List<Integer> newKey = Collections.unmodifiableList(Arrays.asList(food, row, col));		
 		
 		food -= g[row][col];
 		
@@ -119,12 +126,16 @@ public class Save_Beta_Rabbit {
 		if(col > 0 && row > 0) {
 			Integer left = rem(food, row, col-1);
 			Integer up = rem(food, row-1, col);
-			return Math.min( left==null?Integer.MAX_VALUE:left , up==null?Integer.MAX_VALUE:up );
+			Integer result = Math.min( left==null?Integer.MAX_VALUE:left , up==null?Integer.MAX_VALUE:up );
+			cache.put(newKey, result);
+			return result;
 		} else if(col > 0) {
 			Integer left = rem(food, row, col-1);
+			cache.put(newKey, left);
 			return left;
 		} else {//if(row > 0) {
 			Integer up = rem(food, row-1, col);
+			cache.put(newKey, up);
 			return up;
 		}
 	}
@@ -136,17 +147,17 @@ public class Save_Beta_Rabbit {
 //			System.out.println(Arrays.toString(row));
 //		System.out.println(answer(food, grid));
 		
-//		int food = 7;
-//		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
-//		for(int row[]: grid)
-//			System.out.println(Arrays.toString(row));
-//		System.out.println(answer(food, grid));
-//		
-		int food = 12;
+		int food = 7;
 		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
 		for(int row[]: grid)
 			System.out.println(Arrays.toString(row));
 		System.out.println(answer(food, grid));
+		
+//		int food = 12;
+//		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
+//		for(int row[]: grid)
+//			System.out.println(Arrays.toString(row));
+//		System.out.println(answer(food, grid));
 		
 	}
 }
