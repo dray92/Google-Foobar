@@ -54,63 +54,40 @@ public class Save_Beta_Rabbit {
 	public static int answer(int food, int[][] grid) {
 		int N = grid.length - 1;
 		cache = new HashMap<List<Integer>, Integer>();
-		g = grid;
+		g = grid;	// store local reference so as to not 
+					// pass around grid a million times
+		
+		/*
+		 * idea is to start at the end traverse both left and 
+		 * up; if any traversal reaches origin, return whatever 
+		 * food was left; if any traversal hit negative values 
+		 * before reaching origin, returns null. null is treated
+		 * as Integer.MAX_VALUE because:
+		 * - we are concerned with minimizing the amount of food left
+		 * - this value will never be reached since max 20 rows, 20 cols, and each 
+		 * 		grid can have a maximum of 10 food. so, max = 20*20*10 = 4000
+		 * 
+		 * ideally, for a path starting from N-1,N-1 and ending at 0,0
+		 * you would want food to be as close to 0 as possible.
+		 */
+		
+		
 		Integer foodLeft = rem(food, N, N);
 		if(foodLeft == null || foodLeft == Integer.MAX_VALUE)
 			return -1;
 		return foodLeft < 0 ? -1 : foodLeft;
 	}
 	
-	// Collections.unmodifiableList(Arrays.asList(n, r)
-	private static int getRemainder(int foodLeft, int x, int y) {
-		
-		if(x == 0 && y == 0)
-			return foodLeft;
-		
-		List<Integer> tuple = Arrays.asList(foodLeft, x, y);
-		if(cache.containsKey(tuple))
-			return cache.get(tuple);
-		
-		// unmodifiable so key cannot change hash code
-		List<Integer> newKey = Collections.unmodifiableList(Arrays.asList(foodLeft, x, y));
-		
-		foodLeft -= g[x][y];
-		
-		if(foodLeft < 0 || x < 0 || y < 0) {
-			cache.put(newKey, foodLeft + 1);
-			return cache.get(tuple);
-		}
-		
-		else {
-			// both x and y can be non-zero
-			if(x > 0 && y > 0) {
-				int up = getRemainder(foodLeft, x-1, y);
-				int left = getRemainder(foodLeft, x, y-1);
-				int cur = Math.min( left , up );
-				cache.put(newKey, cur);
-				return cache.get(tuple);
-			}
-			// x can be non-zero, y can be 0
-			else if(x > 0) {
-				int up = getRemainder(foodLeft, x-1, y);
-				cache.put(newKey, up);
-				return cache.get(tuple);
-			}
-			
-			// x can be 0, y non-zero
-			else {
-				int left = getRemainder(foodLeft, x, y-1);
-				cache.put(newKey, left);
-				return cache.get(tuple);
-			}
-		}	
-	}
-	
+	// map to cache (food, row, col) to integer
+	// keeps track of result of path originating at (row,col)
+	// with a specific food
 	private static Map<List<Integer>, Integer> cache;
 	private static Integer rem(int food, int row, int col) {
+		// if origin is reached, return
 		if(row == 0 && col == 0)
 			return food;
 		
+		// check if stored in cache
 		List<Integer> tuple = Arrays.asList(food, row, col);
 		if(cache.containsKey(tuple))
 			return cache.get(tuple);
@@ -118,22 +95,30 @@ public class Save_Beta_Rabbit {
 		// unmodifiable so key cannot change hash code
 		List<Integer> newKey = Collections.unmodifiableList(Arrays.asList(food, row, col));		
 		
+		// decrement food count
 		food -= g[row][col];
 		
+		// if food count went negative, return null
 		if(food < 0) 
 			return null;
 		
+		// when there is space to go left and right
 		if(col > 0 && row > 0) {
 			Integer left = rem(food, row, col-1);
 			Integer up = rem(food, row-1, col);
 			Integer result = Math.min( left==null?Integer.MAX_VALUE:left , up==null?Integer.MAX_VALUE:up );
 			cache.put(newKey, result);
 			return result;
-		} else if(col > 0) {
+		} 
+		// no space to go up, only left
+		else if(col > 0) {
 			Integer left = rem(food, row, col-1);
 			cache.put(newKey, left);
 			return left;
-		} else {//if(row > 0) {
+		} 
+		
+		// no space to go left, only up
+		else {//if(row > 0) {
 			Integer up = rem(food, row-1, col);
 			cache.put(newKey, up);
 			return up;
@@ -147,17 +132,17 @@ public class Save_Beta_Rabbit {
 //			System.out.println(Arrays.toString(row));
 //		System.out.println(answer(food, grid));
 		
-		int food = 7;
-		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
-		for(int row[]: grid)
-			System.out.println(Arrays.toString(row));
-		System.out.println(answer(food, grid));
-		
-//		int food = 12;
+//		int food = 7;
 //		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
 //		for(int row[]: grid)
 //			System.out.println(Arrays.toString(row));
 //		System.out.println(answer(food, grid));
+		
+		int food = 12;
+		int[][] grid = new int[][]{{0, 2, 5}, {1, 1, 3}, {2, 1, 1}};
+		for(int row[]: grid)
+			System.out.println(Arrays.toString(row));
+		System.out.println(answer(food, grid));
 		
 	}
 }
