@@ -210,6 +210,11 @@ public class Undercover_Underground {
 			
 			BigInteger choose_n_from_rem_nodes = nChooseR(N-1, n);
 			
+			// this is essentially choosing N-3-n nodes from N-1-n
+			// which is (N-1-n) choose (N-3-n)
+			// = {N-1-n}! / { {N-3-n}! {(N-1-n)-(N-3-n)}!
+			// = {N-1-n}{N-2-n}{N-3-n}! / { {N-3-n}! * 2}!
+			// = {N-1-n}{N-2-n} / 2
 			int chooseN = (N - 1 - n) * (N - 2 - n) / 2;
 			
 			BigInteger repeatedEdges = BigInteger.ZERO;
