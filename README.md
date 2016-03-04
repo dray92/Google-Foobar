@@ -26,7 +26,8 @@ Got a chance to solve these 'puzzles'. Learn more about this [here](http://thehu
 ##### Screenshot 6
 ![Screenshot 6](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_6.png)
 
-##### Screenshot 7 - Level 4 Done! Yay! The graph problem wasn't the easiest in the planet. Don't think I'm entirely content with the solution still. Needs a revisit. :)
+##### Screenshot 7
+Level 4 Done! Yay! The graph problem wasn't the easiest in the planet. Don't think I'm entirely content with the solution still. Needs a revisit. :)
 ![Screenshot 7](https://github.com/dray92/Google-Foobar/blob/master/screenshots/Foobar_7.png)
 
 
