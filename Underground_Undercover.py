@@ -18,18 +18,19 @@ def g(n, k):
         choose(n, s)*s*(n - s) * sum(
             f(s, t) * f(n - s, k - t) for t in range(0, k + 1)) for s in range(1, n))/2
 
+# rewrite g(n,k) without the lambda stuff (for conversion to Java)
 def h(n,k):
-    sum = 0
+    totalGraphs = 0
     
     for s in range(1,n):
-        subSum = 0
+        graphs = 0
         for t in range(0,k+1):
-            subSum += f(s, t) * f(n - s, k - t)
+            graphs += f(s, t) * f(n - s, k - t)
         
-        subSum = choose(n, s)*s*(n - s) * subSum
-        sum+= subSum
+        graphs = choose(n, s)*s*(n - s) * graphs
+        totalGraphs+= graphs
     
-    return sum/2
+    return totalGraphs/2
 
 F = {}
 def f(n, k):
