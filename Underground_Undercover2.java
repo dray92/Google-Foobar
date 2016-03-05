@@ -105,6 +105,61 @@ public class Underground_Undercover2 {
 		return nCrMap.get(tuple);
 	}
 
+	/**
+	 * Ideation: 
+	 *  We know that f(n,n-1) = n^{n-2} is the counting function of the number of 
+	 *  labeled rooted trees [Cayley’s formula]
+	 *  
+	 *	Now, let f(n, k) be the total number of connected graphs with n nodes and k edges,
+	 *  we have a characterization of how to add a new edge:
+	 *		1) Take any graph in F[n,k], and you can add an edge between any 
+	 *			of the {n \choose 2} - k pairs of unmatched nodes.
+	 *		2) If you have two connected graphs g_1 and g_2, say in 
+	 *			F[s, t] and F[n-s, k-t] respectively (that is, a 
+	 *			connected graph with s nodes and t edges and a connected 
+	 *			graph with n-s nodes and k-t edges), then you can surgically 
+	 *			construct a new graph by connecting these two subgraphs together.
+	 *
+	 *	You have s * (n-s) pairs of vertices to choose from, and you can choose 
+	 *	the s point in {n \choose s} ways. You can then sum over the choice of 
+	 *	s and t respectively from 1 to n-1, and in doing so, you will have 
+	 *	double-counted each graph twice. Let's call this construction g(n, k).
+	 *	
+	 *	Then g(n,k) = (\sum_s,t {n \choose s} s (n-s) * f(s,t) * f(n-s, k-t))/2
+	 *	
+	 *	Now, there are no other ways to add in an extra edge (without reducing to 
+	 *	the two constructions above), so the additive term 
+	 *	h(n,k+1) = (N - k)f(n,k) + g(n,k) 
+	 *	gives a characterization of the multiset of graphs that we've 
+	 *	constructed. Why is this a multiset?
+	 *	
+	 *	Well, let's look at a case analysis on the two subcases 
+	 *	(induction on the construction). Take a random graph g in h(n, k+1) graphs 
+	 *	constructed this way. The induction hypothesis is that there are 
+	 *	k + 1 copies of g within the multiset h(n, k+1)
+	 *	
+	 *	Let's just look at the inductive case
+	 *	If you break an edge within a connected graph, then it either remains a connected 
+	 *	graph or it breaks into two connected graphs.
+	 *	Now, fixate on an edge e, if you break any other edges, then e will still be 
+	 *	within (k+1) - 1 distinct constructions. If you break e, you will have yet 
+	 *	another unique construction.
+	 *	This means that there are k + 1 possible distinct classes of graphs 
+	 *	(either single component of two components) from which we can construct the same 
+	 *	final graph g.
+	 *	
+	 *	Therefore, h(n,k+1) counts each graph a total of k+1 times, and so
+	 *	f(n, k+1) = h(n, k+1)/(k+1) = ((N-k)f(n,k) + g(n,k))/(k+1)
+	 *	
+	 *	Given a fixed n and k, this recurrence will compute the correct result in O((nk)^2) time, 
+	 *	so complexity wise, it's equivalent to the previous algorithm.
+	 *	The nice thing about this construction is that it easily yields an analytic 
+	 *	generating function so you can do analysis on it.	
+	 *	In this case, suppose you have a complex-valued function f_k(x,y), 
+	 *	then 2 dy f_{k+1} = (x^2 dx^2 f_k - 2 y dy f_k) + \sum_s z^2 dz f_s dz f_{k-s} 
+	 *	You'll need a lot of complex analysis machinery to solve this recurrence PDE
+	 */
+	
 	static Map<List<Integer>, String> resultMap = new HashMap<List<Integer>, String>();
 	public static String answer(int N, int K) {
 		/* for the case where K > N-1 */
@@ -149,7 +204,7 @@ public class Underground_Undercover2 {
 		// numWays*numGraphsWithOneLessEdge + subGraphs
 		BigInteger result = subGraphs.add(numWays.multiply(numGraphsWithOneLessEdge));
 		
-		// this contains repeats for each of the K edges
+		// k copies of g within the multiset
 		result = result.divide(BigInteger.valueOf(K));
 		
 		// add to cache
