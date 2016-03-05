@@ -16,16 +16,16 @@ def choose(n, k):
 def g(n, k):
     return sum(
         choose(n, s)*s*(n - s) * sum(
-            f(s, t) * f(n - s, k - t) for t in range(0, k + 1)) for s in range(1, n))/2
+            answer(s, t) * answer(n - s, k - t) for t in range(0, k + 1)) for s in range(1, n))/2
 
 # rewrite g(n,k) without the lambda stuff (for conversion to Java)
-def h(n,k):
+def answerHelper(n,k):
     totalGraphs = 0
     
     for s in range(1,n):
         graphs = 0
         for t in range(0,k+1):
-            graphs += f(s, t) * f(n - s, k - t)
+            graphs += answer(s, t) * answer(n - s, k - t)
         
         graphs = choose(n, s)*s*(n - s) * graphs
         totalGraphs+= graphs
@@ -33,7 +33,7 @@ def h(n,k):
     return totalGraphs/2
 
 F = {}
-def f(n, k):
+def answer(n, k):
     if (n, k) in F:
         return F[n, k]
     
@@ -46,14 +46,14 @@ def f(n, k):
     if k == N:
         return 1
     
-    result = ((N - k + 1) * f(n, k - 1) + h(n, k - 1)) / k
+    result = ((N - k + 1) * answer(n, k - 1) + answerHelper(n, k - 1)) / k
     F[n, k] = result
     return result
     
 def test():
     for N in range(2, 21):
         for K in range(N-1, N*(N-1)/2 + 1):
-            print "N = " + str(N) + " , K = " + str(K) + " , num = " + str(f(N, K))
+            print "N = " + str(N) + " , K = " + str(K) + " , num = " + str(answer(N, K))
             
             
 test()
