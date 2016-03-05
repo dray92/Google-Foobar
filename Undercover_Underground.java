@@ -147,8 +147,18 @@ public class Undercover_Underground {
 		/* for the case where K = N-1 */
 		// Cayley's formula applies [https://en.wikipedia.org/wiki/Cayley's_formula].
 		// number of trees on n labeled vertices is n^{n-2}.
-		if(K == N-1)
-			return BigInteger.valueOf((long)Math.pow(N, N-2)).toString();
+		if(K == N-1) {
+			if(N < 2)
+				return BigInteger.valueOf((long)Math.pow(N, N-2)).toString();
+			
+			// multiply N to itself N-2 times
+			BigInteger val = BigInteger.ONE;
+			int count = 0;
+			while(count++ != N-2)
+				val = val.multiply( BigInteger.valueOf( (long)N ) );
+			
+			return val.toString();
+		}
 		
 		/* for the case where K > N-1 */
 		// check if key is present in the map
