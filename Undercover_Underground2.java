@@ -72,7 +72,7 @@ test()
  *
  */
 
-public class Underground_Undercover2 {
+public class Undercover_Underground2 {
 
 	private static Map<List<Integer>, BigInteger> nCrMap = new HashMap<List<Integer>, BigInteger>();
 	// reference: https://en.wikipedia.org/wiki/Binomial_coefficient#Multiplicative_formula
