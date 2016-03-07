@@ -72,7 +72,7 @@ test()
  *
  */
 
-public class Undercover_Underground2 {
+public class Undercover_Underground2 extends Undercover_Underground_Interface {
 
 	private static Map<List<Integer>, BigInteger> nCrMap = new HashMap<List<Integer>, BigInteger>();
 	// reference: https://en.wikipedia.org/wiki/Binomial_coefficient#Multiplicative_formula
@@ -161,7 +161,7 @@ public class Undercover_Underground2 {
 	 */
 	
 	static Map<List<Integer>, String> resultMap = new HashMap<List<Integer>, String>();
-	public static String answer(int N, int K) {
+	public String answer(int N, int K) {
 		/* for the case where K > N-1 */
 		// check if key is present in the map
 		List<Integer> tuple = Arrays.asList(N, K);
@@ -222,7 +222,7 @@ public class Undercover_Underground2 {
 		return resultMap.get(tuple);
 	}
 	
-	private static BigInteger answerHelper(int N, int K) {
+	private BigInteger answerHelper(int N, int K) {
 		
 		BigInteger totalGraphs = BigInteger.ZERO;
 		
@@ -258,9 +258,11 @@ public class Undercover_Underground2 {
 	}
 	
 	public static void main(String[] args) {	
+		Undercover_Underground2 unit = new Undercover_Underground2();
+		
 		for(int n = 2 ; n <= 20 ; n++) {
 			for(int k = n-1 ; k <= n*(n-1)/2 ; k++) {
-				String ans = answer(n,k);
+				String ans = unit.answer(n,k);
 				System.out.println("N = " + n + " , K = " + k + " , num = " + ans);
 			}
 		}

@@ -54,7 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Undercover_Underground {
+public class Undercover_Underground extends Undercover_Underground_Interface {
 
 	static Map<List<Integer>, BigInteger> nCrMap = new HashMap<List<Integer>, BigInteger>();
 	// formula: nCr = n! / [r! * (n-r)!]
@@ -138,7 +138,7 @@ public class Undercover_Underground {
 	
 	static Map<List<Integer>, String> resultMap = new HashMap<List<Integer>, String>();
 	// loose reference: http://math.stackexchange.com/questions/689526/how-many-connected-graphs-over-v-vertices-and-e-edges
-	public static String answer(int N, int K) {
+	public String answer(int N, int K) {
 		
 		/* for the case where K < N-1 */
 		if(K < N-1)
@@ -223,9 +223,10 @@ public class Undercover_Underground {
 	}
 	
 	public static void main(String[] args) {
+		Undercover_Underground unit = new Undercover_Underground();
 		for(int n = 2 ; n <= 20 ; n++) {
 			for(int k = n-1 ; k <= n*(n-1)/2 ; k++) {
-				String ans = answer(n,k);
+				String ans = unit.answer(n,k);
 				System.out.println("N = " + n + " , K = " + k + " , num = " + ans);
 				
 			}
