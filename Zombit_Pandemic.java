@@ -167,7 +167,82 @@ public class Zombit_Pandemic {
     	return sum;
     }
 
-    // full ideation can be found at: 
+    /*
+     * Ideation: 
+     * We essentially need the maximum expected tree size in a pseudoforest.
+     * The problem then reduces to:
+     * 	given n labeled nodes, get expected max tree of randomly generated
+     * 	pseudoforest. Obviously, given the constraints of the problem, no
+     * 	empty or single node trees will be allowed; no self loops will be
+     * 	allowed.
+     * 
+     * Firstly, given N nodes, total number of pseudoforests is (N-1)^{N}.
+     * I think this is pretty elementary. Google to find out more if you need.
+     * 
+     * Now, we have a function for the expected maximum tree size:
+     * 	E(x) = \sum_{n=1}^{\N} n \cdot p(n)
+     * 
+     * 		- since no single node trees are allowed, no pseudoforest with 
+     * 		  max tree size of N-1 is possible
+     * 		- number of pseudoforests of N nodes containing only one connected
+     * 		  component [definition of connected component (CC): in an undirected 
+     * 		  graph, a CC is a subgraph consisting of edges and vertices that 
+     * 		  can be reached by following edges given a starting vertex].	
+     * 		  Now, if you look at A001864 in OEIS, you will find something along the
+     * 		  lines of the number of connected components being:
+     * 			\sum_{n=1}^{\N-1}  \binom{N}{i} \cdot (n-i)^{n-i} \cdot (n)^{n}
+     * 		  Now, by taking the sum of all such possible pseudoforests, we account
+     * 		  for each pseudoforest N times. Dividing this sum by N gives us what we need.
+     * 		- this is quite intuitive; minimum size of a tree of size (n % 2 == 0) is 2
+     * 		  and 3 otherwise [I meant even and odd :)].
+     * 		- the sum of the numerators of p(i) = (i-1)^{i}
+     * 
+     * ∀ n: n ∈ [1,2,3,...]; choose some x = n.
+     * the denominators for elements in E(x) must
+     * be the same; this value is given by (N-1)^{N} where
+     * N is the total number of nodes. 
+     * 
+     * Lets test this out for N = 4.
+     * For the denominator, (4-1)^{4} = 81
+     * Partitions we care about: [2,2], [4]
+     * for the 2 case, our numerator looks like 2 \cdot 3
+     * for the 4 case, our numerator looks like 4 \cdot 78
+     * If interested, you will find that the 78 is actually 
+     * the 4th number in the sequence A000435. Further reading
+     * will also show that in essence, A000435 * N = A001864
+     * This will help connect ideas better, I think.
+     * 
+     * { (2*3)/81 }  + { (4*78)/81 } is what we are looking at.
+     * = { 2/27 } + { 104/27 } = { 106/27 }
+     * 
+     * A little more elaboration. I had this as pseudo-code when I was
+     * working on this problem. 
+     * 
+     * T(n) -> number of pseudoforests with exactly one CC, i.e., each 
+     * vertex with an outdegree of 1 in an undirected, connected graph.
+     * 
+     * Say π(n) is the set of integer partitions of n
+     * for every τ in π(n):
+     *     if(1 is an element of τ):
+     *         ignore it
+     *     else
+     *         result += max(τ) * J(τ) * [ \prod_{t ∈ τ} T(t)]
+     *         
+     * J(τ) -> number of ways to split n labeled nodes based on the
+     * partition τ.
+     * Say τ = {t_1 , t_2, ... , t_r}
+     * Say, the set of elements without repeats is S = {s_1, s_2, ... , s_s}
+     * The set of frequencies or multiplicities is M = {m_1, m_2, ... , m_s}
+     * 
+     * So, J(τ) = \frac{ \binom{n}{t_1} \cdot \binom{n - t_1}{t_2} \cdot ... \cdot \binom{t_r}{t_r}}{ \prod_{i = 1}{s} (m_i)!}
+     * 
+     * To elaborate, J(τ) gives the ways of splitting n labeled nodes into connected
+     * components of sizes given by the partition τ
+     * 
+     * and as a direct consequence, [ \prod_{t ∈ τ} T(t)] would be the ways of 
+     * connecting labeled nodes inside each connected component. 
+     * 
+     */
     public static String answer(int n) {
     	BigInteger numerator = getNumerator(n);
     	
@@ -274,6 +349,7 @@ public class Zombit_Pandemic {
     	return result;
     }
     
+    // some pre-processing for extra runtime speed
     static {
     	// populate partitionMap
     	for(int i = 2 ; i <= 50 ; i++) 
