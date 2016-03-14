@@ -2,12 +2,10 @@ package primary;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
- * /**
  * Don't mind the map
 ==================
 
@@ -91,56 +89,43 @@ Output:
  * @author Debosmit
  *
  */
-public class Dont_Mind_The_Map {
+public class Dont_Mind_The_Map2 {
+
+	private static final int numIterations;
+	private static Set<List<Integer>> paths_numTunnels_5;
+	private static Set<List<Integer>> paths_numTunnels_4;
+	private static Set<List<Integer>> paths_numTunnels_3;
+	private static Set<List<Integer>> paths_numTunnels_2;
+	private static Set<List<Integer>> paths_numTunnels_1;
 	
-	private static int[][] subway = null;
-	private static Integer closed = null;
-	
-	private static int numLines() {
-		// Each element of subway will have the same number of elements 
-		// (so, each station has the same number of outgoing lines), 
-		// which will be between 1 and 5.
-		if(subway != null)
-			return subway[0].length;
-		return 0;
-	}
-	
-	private static void close(int station) {
-		closed = station;
-	}
-	
-	// get a collection of all possible paths
-	public static List<List<Integer>> getPaths() {
-		List<List<Integer>> set = new ArrayList<List<Integer>>();
-		
-		int numLines = numLines();
+	private static int[][] mySubway;
+
+	public static Set<List<Integer>> getPaths(int numTunnels, int iterations) {
+		Set<List<Integer>> set = new HashSet<List<Integer>>();
 		
 		// set up a basis
-		for(int list = 0 ; list < numLines ; list++) {
+		for(int list = 0 ; list < numTunnels ; list++) {
 			List<Integer> myList = new ArrayList<Integer>();
 			myList.add(list);
 			set.add(myList);
 		}
 		
-		// 1 iteration was spent on getting the basis
-		int numRepeats = numLines - 1;
+		Set<List<Integer>> prevSetOfPaths = set;
 		
-		List<List<Integer>> prevSetOfPaths = set;
-		
-		while(numRepeats > 0) {
-			List<List<Integer>> pathsWithHigherDegreeOfPenetration = 
-									getPaths(prevSetOfPaths, numLines);
+		while(iterations > 0) {
+			Set<List<Integer>> pathsWithHigherDegreeOfPenetration = 
+									getPaths(prevSetOfPaths, numTunnels);
 			set.addAll(pathsWithHigherDegreeOfPenetration);
 			prevSetOfPaths = pathsWithHigherDegreeOfPenetration;
-			numRepeats--;
+			iterations--;
 		}
 		return set;
 	}
 	
-	private static List<List<Integer>> getPaths(List<List<Integer>> source, int numLines) {
-		List<List<Integer>> set = new ArrayList<List<Integer>>();
+	private static Set<List<Integer>> getPaths(Set<List<Integer>> source, int numTunnels) {
+		Set<List<Integer>> set = new HashSet<List<Integer>>();
 		for(List<Integer> list: source) {
-			for(int i = 0 ; i < numLines ; i++) {
+			for(int i = 0 ; i < numTunnels ; i++) {
 				list.add(i);
 				set.add(new ArrayList<Integer>(list));
 				list.remove(list.size()-1);
@@ -149,77 +134,138 @@ public class Dont_Mind_The_Map {
 		return set;
 	}
 	
-	private static boolean doesMeetingPathExist() {
-		for(List<Integer> path: getPaths()) {
-			if(allPathsToSameDestination(path)) 
-				return true;
-		}
-		return false;
+	// given a starting station, take the path given by the list
+	// of paths to arrive at a destination station
+	// this value is returned
+	// upperBound on length of path is set by numIterations
+	private static int getDestination(int station, List<Integer> path) {
+		for(int i = 0 ; i < path.size() ; i++)
+			station = mySubway[station][path.get(i)];
+		
+		return station;
 	}
 	
-	private static boolean allPathsToSameDestination(List<Integer> path) {
-		Integer targetStation = null;	// set after first station is processed
+	private static boolean forGivenPathIsDestinationCommonForAllStations(List<Integer> path) {
+		for(int station = 1 ; station < mySubway.length ; station++) {
+			// if destination on taking this path from the previous stations
+			// is not the same as the destination on taking this path from
+			// this station, then obviously no point looking any further
+			if( getDestination(station-1, path) != getDestination(station, path) )
+				return false;
+		}
+		return true;
+	}
+	
+	static {
+		numIterations = 7;
 		
-		for(int station = 0 ; station < subway.length ; station++) {
-			// ignore closed station
-			if(station == closed)
+		// initialize set of possible paths 
+		// this is possible since numTunnels coming
+		// out of each station is known to be 
+		// between 1 and 5
+		paths_numTunnels_5 = getPaths(5, numIterations);
+
+		paths_numTunnels_4 = getPaths(4, numIterations);
+		
+		paths_numTunnels_3 = getPaths(3, numIterations);
+		
+		paths_numTunnels_2 = getPaths(2, numIterations);
+		
+		paths_numTunnels_1 = getPaths(1, numIterations);
+	}
+	
+	public static int answer(int[][] subway) {
+	    
+	    
+		mySubway = subway;
+		
+		int numTunnels = mySubway[0].length;
+		
+		// choose which set of paths to use
+		// which depends on the number of tunnels
+		// coming out from a station
+		Set<List<Integer>> paths = null;
+		switch(numTunnels) {
+			case 1:
+				paths = paths_numTunnels_1;
+				break;
+			case 2:
+				paths = paths_numTunnels_2;
+				break;
+			case 3:
+				paths = paths_numTunnels_3;
+				break;
+			case 4:
+				paths = paths_numTunnels_4;
+				break;
+			case 5:
+				paths = paths_numTunnels_5;
+				break;
+		}
+		
+		for(List<Integer> path: paths) 
+			if(forGivenPathIsDestinationCommonForAllStations(path)) 
+				return -1;
+		
+		// HACK!!! NEED TO FIX
+		if(mySubway[0].length == 1)
+			return 0;
+		
+		 
+		return -2;
+	}
+	
+	
+	private static int[][] getSubwayWithoutStation(int station) {
+		int[] routes = mySubway[station];
+	
+		int[][] newSubway = new int[mySubway.length-1][mySubway[0].length];
+		for(int i = 0 ; i < mySubway.length ; i++) {
+			if(i == station)
 				continue;
-			
-			int destination = getDestination(station, path);
+			newSubway[(i>station) ? i-1 : i] = mySubway[i];
 		}
-		return false;
+		
+		for(int stn = 0 ; stn < newSubway.length ; stn++) {
+			for(int tunnel = 0 ; tunnel < newSubway[stn].length ; tunnel++) {
+				if(newSubway[stn][tunnel] > station) 
+					newSubway[stn][tunnel]--;
+				else if(newSubway[stn][tunnel] == station) 
+					if(routes[tunnel] == station)
+						newSubway[stn][tunnel] = stn;
+					else 
+						newSubway[stn][tunnel] = routes[tunnel];
+			}
+		}
+		return newSubway;
 	}
 	
-	private static int getDestination(int startStation, List<Integer> path) {
-		/*
-		 * Ideation for hypothesis that the entire path might not need to
-		 * be traversed.
-		 * 
-		 * Citing the instance for the case where there are 2 tunnels.
-		 * Paths are: [0],[1],[0,0],[0,1],[1,0],[1,1]
-		 * For the existence of a path [1,x], there must've been a path [1].
-		 * If ordering is preserved, [1] would have been traversed already.
-		 * So, we can use that information, and then simple traverse [x] based 
-		 * on that previously stored destination.
-		 * So, we would need to have a mapping to a destination with 
-		 * [startStation, path] as the keys.
-		 * Now, this destination can differ depending on which station is closed.
-		 * When no station is closed, closedStation = null. This mapping is quite
-		 * intuitive - stationClosed is an Integer, the destination is also an Integer.
-		 */
-		int curStation = startStation;
-		int[] availableLines = subway[curStation];
-		
-		for(Integer nextLine: path) {
-			curStation = goToNextStation(curStation, availableLines, nextLine);
-			availableLines = subway[curStation];
-		}
-		return curStation;
-	}
-
-	private static int goToNextStation(int curStation, int[] availableLines,
-			int nextLine) {
-		int next = availableLines[nextLine];
-		
-		// before closing stations
-		if(closed == null)
-			return next;
-		
-		if(next == closed) 
-			next = subway[closed][nextLine];
-		
-		if(next != closed)
-			return next;
-		return curStation;
-		
-	}
-
+	// numTunnels -> [1,5]
 	public static void main(String[] args) {
-		int[][] stations = new int[][]{{1,2},{3,4},{5,6},{7,8}};
-		subway = stations;
-		for(List<Integer> list: getPaths())
-			System.out.println(list);
-		System.out.println(getPaths().size());
+		int[][] subway1 = {{2, 1}, {2, 0}, {3, 1}, {1, 0}};
+		long start = System.nanoTime();
+		System.out.println(answer(subway1));
+		System.out.println((System.nanoTime() - start));
+		
+		int[][] subway2 = {{1, 2}, {0, 2}, {1, 0}};
+		start = System.nanoTime();
+		System.out.println(answer(subway2));
+		System.out.println((System.nanoTime() - start));
+		
+		int[][] subway3 = {{1, 2}, {1, 1}, {2, 2}};
+		start = System.nanoTime();
+		System.out.println(answer(subway3));
+		System.out.println((System.nanoTime() - start));
+		
+		int[][] subway4 = {{1}, {0}};
+		start = System.nanoTime();
+		System.out.println(answer(subway4));
+		System.out.println((System.nanoTime() - start));
+		
+		int[][] subway5 = {{1,1},{2,2},{0,2}};
+		start = System.nanoTime();
+		System.out.println(answer(subway5));
+		System.out.println((System.nanoTime() - start));
+		
 	}
-
 }
