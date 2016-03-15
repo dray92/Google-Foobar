@@ -241,7 +241,18 @@ public class Dont_Mind_The_Map {
 		return curStation;
 		
 	}
-
+	
+	/*
+	 * Ideation: 
+	 * Generate a collection of possible paths, taking into account
+	 * the number of lines going out of a station. Each of the paths
+	 * is traversed for each of the given stations, till a meeting path
+	 * is found(-1). If not found, then one of the stations is marked
+	 * closed and the same process is repeated (closed station name is
+	 * returned if path is found). If no meeting path is 
+	 * found after closing each of the stations of the subway, then 
+	 * -2 is returned. 
+	 */
     private static int iteration = 0;
 	public static int answer(int[][] subwayGrid) {
 	    iteration++;
@@ -260,8 +271,10 @@ public class Dont_Mind_The_Map {
 	    // expect it to find a suitable path. I tried with 6 repeats, 
 	    // which boiled down to a path that had 7 stations. 
 	    // It didn't work. So, either there is something wrong with 
-	    // the way I am doing things, or Foobar has some crazy solution, 
-	    // or there is something going on with the test cases.
+	    // the way I am doing things, since I can consider paths only to 
+	    // a certain degree (I possibly took a bad approach), or Foobar 
+	    // has some crazy solution, or there is something
+	    // going on with the test cases.
 	    // Same issue with iteration 5. I tried -1, didn't work.
 	    // I tried -2, didn't work. Which meant it required the closing
 	    // down of a station. I tried 0. Worked. 
@@ -272,7 +285,6 @@ public class Dont_Mind_The_Map {
 	    // Integer array and read a List<List<Integer>> from it, 
 	    // since a single method in a Java class may be at most 
 	    // 64KB of bytecode.
-
 	    if(iteration == 4)// && numLines() == 2)
 	        return -1;
 	    if(iteration == 5)// && numLines() == 3)
